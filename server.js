@@ -22,12 +22,22 @@ app.set('view engine', 'handlebars');
 // static files
 app.use(express.static(__dirname + '/public'));
 
+// body parser
+app.use(require('body-parser')())
+
 // routes
 app.get('/', function(req, res) {
 	res.render('home');
 });
 app.get('/testimonials', function(req, res) {
 	res.render('testimonials', {testimonial: testimonials.getTestimonial()});
+});
+app.get('/contact', function(req, res) {
+	res.render('contact', {csrf: 'dummy'});
+});
+app.post('/contact', function(req, res) {
+	console.log(req.body);
+	res.render('contact-finish');
 });
 
 // error 404
