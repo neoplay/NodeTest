@@ -15,6 +15,20 @@ module.exports = function(app) {
 
 	app.get('/contact/finish', contact.finish.get);
 
+	// auto routes
+	var autoViews = {};
+	var fs = require('fs');
+	app.use(function(res, req, next) {
+		// BUG path
+		var path = req.path.toLowerCase();
+		if(autoViews[path]) return res.render(autoViews[path]);
+		if(fs.existsSync(__dirname + '/views' + path + '.handlebars')) {
+			autoViews[path] = path.replace(/^\//, '');
+			return res.render(autoViews[path]);
+		}
+		next();
+	});
+
 	// error 404
 	app.use(function(req, res, next) {
 		res.status(404);
