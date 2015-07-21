@@ -1,4 +1,5 @@
 var express = require('express');
+var testimonials = require('./lib/testimonials.js');
 
 var app = express();
 
@@ -15,6 +16,9 @@ app.use(express.static(__dirname + '/public'));
 // routes
 app.get('/', function(req, res) {
 	res.render('home');
+});
+app.get('/testimonials', function(req, res) {
+	res.render('testimonials', {testimonial: testimonials.getTestimonial()});
 });
 
 // error 404
