@@ -2,11 +2,17 @@
 <html>
 <head>
 	<title>Test Page</title>
+	{{{_sections.head}}}
 </head>
 <body>
 	<header>
 		<img src="/img/logo.png" alt="Logo">
 	</header>
 	{{{body}}}
+	{{> status}}
+	<footer>
+		&copy; 2015 Urs Gürtler
+	</footer>
+	{{{_sections.footer}}}
 </body>
 </html>

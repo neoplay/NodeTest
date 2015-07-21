@@ -6,7 +6,16 @@ var app = express();
 app.set('port', process.env.PORT || 3000);
 
 // setup view engine
-var handlebars = require('express3-handlebars').create({defaultLayout: 'main'});
+var handlebars = require('express3-handlebars').create({
+	defaultLayout: 'main',
+	helpers: {
+		section: function(name, options) {
+			if(!this._sections) this._sections = {};
+			this._sections[name] = options.fn(this);
+			return null;
+		}
+	}
+});
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
