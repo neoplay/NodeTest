@@ -1,6 +1,7 @@
 var express = require('express');
 var credentials = require('./credentials.js');
 var testimonials = require('./lib/testimonials.js');
+var emailService = require('./lib/email.js')(credentials);
 
 var app = express();
 
@@ -34,7 +35,6 @@ app.use(require('express-session')());
 
 // flash message
 app.use(function(req, res, next) {
-	console.log(req.path);
 	res.locals.flash = req.session.flash;
 	delete req.session.flash;
 	next();
@@ -63,7 +63,10 @@ app.get('/contact', function(req, res) {
 	res.render('contact', {csrf: 'dummy'});
 });
 app.post('/contact', function(req, res) {
-	console.log(req.body);
+	res.render('emails/contact-finish', {layout: null, body: req.body}, function(err, html) {
+		if(err) console.log('error in email template');
+		emailService.send('u.guertler@fusion7.ch','Contact form',html);
+	});
 	req.session.flash = {
 		type: 'info',
 		intro: 'Form submitted',
