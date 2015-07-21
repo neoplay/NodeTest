@@ -29,6 +29,16 @@ app.use(require('body-parser')());
 // cookie parser
 app.use(require('cookie-parser')(credentials.cookieSecret));
 
+// express session
+app.use(require('express-session')());
+
+// flash message
+app.use(function(req, res, next) {
+	res.locals.flash = req.session.flash;
+	delete req.session.flash;
+	next();
+});
+
 // routes
 app.get('/', function(req, res) {
 	// cookie test
@@ -47,6 +57,14 @@ app.get('/contact', function(req, res) {
 });
 app.post('/contact', function(req, res) {
 	console.log(req.body);
+	req.session.flash = {
+		type: 'info',
+		intro: 'Form submitted',
+		message: 'The form has been submitted'
+	};
+	res.redirect('/contact/finish');
+});
+app.get('/contact/finish', function(req, res) {
 	res.render('contact-finish');
 });
 
