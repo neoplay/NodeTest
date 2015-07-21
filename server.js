@@ -1,4 +1,5 @@
 var express = require('express');
+var credentials = require('./credentials.js');
 var testimonials = require('./lib/testimonials.js');
 
 var app = express();
@@ -23,10 +24,19 @@ app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
 
 // body parser
-app.use(require('body-parser')())
+app.use(require('body-parser')());
+
+// cookie parser
+app.use(require('cookie-parser')(credentials.cookieSecret));
 
 // routes
 app.get('/', function(req, res) {
+	// cookie test
+	if(req.signedCookies.lastVisit) {
+		console.log(req.signedCookies.lastVisit);
+		res.clearCookie('lastVisit');
+	} else
+		res.cookie('lastVisit', 'blaa', {signed: true});
 	res.render('home');
 });
 app.get('/testimonials', function(req, res) {
