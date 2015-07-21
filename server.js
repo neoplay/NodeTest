@@ -9,6 +9,9 @@ var handlebars = require('express3-handlebars').create({defaultLayout: 'main'});
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
+// static files
+app.use(express.static(__dirname + '/public'));
+
 // routes
 app.get('/', function(req, res) {
 	res.render('home');
