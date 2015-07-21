@@ -1,7 +1,9 @@
 var express = require('express');
 var credentials = require('./credentials.js');
+var mongoose = require('mongoose');
 var testimonials = require('./lib/testimonials.js');
 var emailService = require('./lib/email.js')(credentials);
+var Contact = require('./models/contact.js')
 
 var app = express();
 
@@ -23,6 +25,9 @@ app.set('view engine', 'handlebars');
 
 // static files
 app.use(express.static(__dirname + '/public'));
+
+// mongoose
+mongoose.connect(credentials.mongo.connectionString);
 
 // body parser
 app.use(require('body-parser')());
@@ -63,6 +68,10 @@ app.get('/contact', function(req, res) {
 	res.render('contact', {csrf: 'dummy'});
 });
 app.post('/contact', function(req, res) {
+	var entry = new Contact({formfield: req.body.formfield});
+	entry.save(function(err) {
+		if(err) console.log(err);
+	});
 	res.render('emails/contact-finish', {layout: null, body: req.body}, function(err, html) {
 		if(err) console.log('error in email template');
 		emailService.send('u.guertler@fusion7.ch','Contact form',html);
