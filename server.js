@@ -1,9 +1,8 @@
 var express = require('express');
 var credentials = require('./credentials.js');
 var mongoose = require('mongoose');
-var testimonials = require('./lib/testimonials.js');
-var emailService = require('./lib/email.js')(credentials);
-var Contact = require('./models/contact.js')
+var MongoSessionStore = require('session-mongoose')(require('connect'));
+var sessionStore = new MongoSessionStore({url: credentials.mongo.connectionString});
 
 var app = express();
 
@@ -36,7 +35,7 @@ app.use(require('body-parser')());
 app.use(require('cookie-parser')(credentials.cookieSecret));
 
 // express session
-app.use(require('express-session')());
+app.use(require('express-session')({store: sessionStore}));
 
 // flash message
 app.use(function(req, res, next) {
@@ -52,53 +51,7 @@ app.use(function(req, res, next) {
 });
 
 // routes
-app.get('/', function(req, res) {
-	// cookie test
-	if(req.signedCookies.lastVisit) {
-		console.log(req.signedCookies.lastVisit);
-		res.clearCookie('lastVisit');
-	} else
-		res.cookie('lastVisit', 'blaa', {signed: true});
-	res.render('home');
-});
-app.get('/testimonials', function(req, res) {
-	res.render('testimonials', {testimonial: testimonials.getTestimonial()});
-});
-app.get('/contact', function(req, res) {
-	res.render('contact', {csrf: 'dummy'});
-});
-app.post('/contact', function(req, res) {
-	var entry = new Contact({formfield: req.body.formfield});
-	entry.save(function(err) {
-		if(err) console.log(err);
-	});
-	res.render('emails/contact-finish', {layout: null, body: req.body}, function(err, html) {
-		if(err) console.log('error in email template');
-		emailService.send('u.guertler@fusion7.ch','Contact form',html);
-	});
-	req.session.flash = {
-		type: 'info',
-		intro: 'Form submitted',
-		message: 'The form has been submitted'
-	};
-	res.redirect('/contact/finish');
-});
-app.get('/contact/finish', function(req, res) {
-	res.render('contact-finish');
-});
-
-// error 404
-app.use(function(req, res, next) {
-	res.status(404);
-	res.render('404');
-});
-
-// error 500
-app.use(function(err, req, res, next) {
-	console.error(err.stack);
-	res.status(500);
-	res.render('500');
-});
+require('./routes.js')(app);
 
 app.listen(app.get('port'), function() {
 	console.log('Express started on http://localhost:'+app.get('port')+'; press Ctrl-C to terminate');
