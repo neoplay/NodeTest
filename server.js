@@ -4,19 +4,27 @@ var app = express();
 
 app.set('port', process.env.PORT || 3000);
 
-//404
-app.use(function(req, res) {
-	res.type('text/plain');
-	res.status(404);
-	res.send('404 - Not Found');
+// setup view engine
+var handlebars = require('express3-handlebars').create({defaultLayout: 'main'});
+app.engine('handlebars', handlebars.engine);
+app.set('view engine', 'handlebars');
+
+// routes
+app.get('/', function(req, res) {
+	res.render('home');
 });
 
-//500
+// error 404
+app.use(function(req, res, next) {
+	res.status(404);
+	res.render('404');
+});
+
+// error 500
 app.use(function(err, req, res, next) {
 	console.error(err.stack);
-	res.type('text-plain');
 	res.status(500);
-	res.send('500 - Server Error');
+	res.render('500');
 });
 
 app.listen(app.get('port'), function() {

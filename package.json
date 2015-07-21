@@ -9,6 +9,7 @@
   "author": "Urs Gürtler",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.13.1"
+    "express": "^4.13.1",
+    "express3-handlebars": "^0.5.2"
   }
 }
