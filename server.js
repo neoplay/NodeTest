@@ -34,8 +34,15 @@ app.use(require('express-session')());
 
 // flash message
 app.use(function(req, res, next) {
+	console.log(req.path);
 	res.locals.flash = req.session.flash;
 	delete req.session.flash;
+	next();
+});
+
+// pass request object to view engine
+app.use(function(req, res, next) {
+	res.locals.req = req;
 	next();
 });
 
