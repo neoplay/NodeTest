@@ -18,8 +18,7 @@ module.exports = function(app) {
 	// auto routes
 	var autoViews = {};
 	var fs = require('fs');
-	app.use(function(res, req, next) {
-		// BUG path
+	app.use(function(req, res, next) {
 		var path = req.path.toLowerCase();
 		if(autoViews[path]) return res.render(autoViews[path]);
 		if(fs.existsSync(__dirname + '/views' + path + '.handlebars')) {
